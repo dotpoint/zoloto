@@ -58,7 +58,7 @@ var map = L.mapbox.map('map', 'mapbox.satellite')
 
 
 L.mapbox.featureLayer()
-    .loadURL('../data/ser_bor_shape_2.geojson')
+    .loadURL('ser_bor_shape_2.geojson')
     .addTo(map);
 
       //выдёргиваем из загруженного объекта geoJson-объект
@@ -66,7 +66,7 @@ L.mapbox.featureLayer()
       //чтобы применить стиль, можно указать в geoJson данных стили
 
 L.mapbox.featureLayer()
-    .loadURL('../data/ser_bor_shape_2.geojson') //загружаем geoJson
+    .loadURL('ser_bor_shape_2.geojson') //загружаем geoJson
 
     //добавляем событие, которое обрабатываем по загрузке файла
     .on('ready', function(e) {
