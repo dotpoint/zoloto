@@ -9,7 +9,7 @@
 <style>
   body { margin:0; padding:0; }
   #map { position:absolute; top:0; bottom:0; width:100%; }
-  #head { position:absolute; top:20px ; left:0 ; width:100%; color: #FFFFFF ;
+  #head { position:absolute; top:20px ; left:0 ; width:100% ;
           font-size: 20px; font-family: helvetica; padding-left: 60px}
   .legend label,
   .legend span {
@@ -22,6 +22,11 @@
     font-family: helvetica;
     line-height: 9px;
     color:#808080;
+    }
+
+    .flatimage {
+      width: 100px;
+      border-radius: 50%;
     }
 </style>
 </head>
@@ -49,17 +54,15 @@
     <label>Хоз. посторойка</label>
 </div>
 
+<!--<img src='11.jpg' id="id">
+-->
 
 <script>
 L.mapbox.accessToken = 'pk.eyJ1Ijoib2xjaHUiLCJhIjoiY2lsZ29wZDR3MDA1NHc4bHpoM2pseDltMiJ9.Wv-eUlLShNbd9hh4NkhDCA';
-var map = L.mapbox.map('map', 'mapbox.satellite')
+var map = L.mapbox.map('map', 'mapbox.light')
     .setView([55.783374,37.425641], 15);
     map.legendControl.addLegend(document.getElementById('legend').innerHTML);
 
-
-L.mapbox.featureLayer()
-    .loadURL('ser_bor_shape_2.geojson')
-    .addTo(map);
 
       //выдёргиваем из загруженного объекта geoJson-объект
       //console.log(source);
@@ -120,7 +123,9 @@ L.mapbox.featureLayer()
                                                       '<br/>Площадь участка: ' + feature.properties.s +
                                                       '<br/>Кадастр здания: ' + feature.properties.kadastr_zd +
                                                       '<br/>Тип дома: ' + feature.properties.type +
-                                                      '<br/>Количество квартир: ' + feature.properties.flats)
+                                                      '<br/>Количество квартир: ' + feature.properties.flats +
+                                                      '<img src="images/' + feature.properties.image + '" style="flatimage">')
+                                                      //+ document.getElementById('id').style.borderRadius = '50%')
         },
         //функция style пригодится если будете указывать стили для полигонов/линий
         //style: function(feature) { return feature.properties; }
