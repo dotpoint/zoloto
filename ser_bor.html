@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Load GeoJSON from a URL</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.3.0/mapbox.css' rel='stylesheet' />
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+  #head { position:absolute; top:20px ; left:0 ; width:100%; color: #FFFFFF ;
+          font-size: 20px; font-family: helvetica; padding-left: 60px}
+  .legend label,
+  .legend span {
+    display:block;
+    float:left;
+    height:30px;
+    width:16%;
+    text-align:left;;
+    font-size:9px;
+    font-family: helvetica;
+    line-height: 9px;
+    color:#808080;
+    }
+</style>
+</head>
+<body>
+<div id='map'></div>
+
+<div id='head'>
+Жилой комплекс "Серебрянный бор"
+</div>
+
+<div id='legend' style='display:none;'>
+  <strong>Тип постройки</strong>
+  <nav class='legend clearfix'>
+    <span style='background:#8C510A;'></span>
+    <span style='background:#D8B365;'></span>
+    <span style='background:#F6E8C3;'></span>
+    <span style='background:#C7EAE5;'></span>
+    <span style='background:#5AB4AC;'></span>
+    <span style='background:#01665E;'></span>
+    <label>Швед. деревня</label>
+    <label>Коттедж, цветной фасад</label>
+    <label>Коттедж, дерево</label>
+    <label>Коттедж, кирпич</label>
+    <label>Коттедж, тромвиль</label>
+    <label>Хоз. посторойка</label>
+</div>
+
+
+<script>
+L.mapbox.accessToken = 'pk.eyJ1Ijoib2xjaHUiLCJhIjoiY2lsZ29wZDR3MDA1NHc4bHpoM2pseDltMiJ9.Wv-eUlLShNbd9hh4NkhDCA';
+var map = L.mapbox.map('map', 'mapbox.satellite')
+    .setView([55.783374,37.425641], 15);
+    map.legendControl.addLegend(document.getElementById('legend').innerHTML);
+
+
+L.mapbox.featureLayer()
+    .loadURL('../data/ser_bor_shape_2.geojson')
+    .addTo(map);
+
+      //выдёргиваем из загруженного объекта geoJson-объект
+      //console.log(source);
+      //чтобы применить стиль, можно указать в geoJson данных стили
+
+L.mapbox.featureLayer()
+    .loadURL('../data/ser_bor_shape_2.geojson') //загружаем geoJson
+
+    //добавляем событие, которое обрабатываем по загрузке файла
+    .on('ready', function(e) {
+
+      //выдёргиваем из загруженного объекта geoJson-объект
+      var source = e.target.getGeoJSON();
+
+      //console.log(source);
+
+      //чтобы применить стиль, можно указать в geoJson данных стили
+      source.features.forEach(function(feature) {
+        //feature.properties['marker-color'] = '#FFF700';
+        if (feature.properties.type==='1-а'||feature.properties.type==='1-б') {
+        feature.properties['marker-color'] = '#8C510A';
+        }
+        else if (feature.properties.type==='2') {
+        feature.properties['marker-color'] = '#D8B365';
+        }
+        else if (feature.properties.type==='3') {
+        feature.properties['marker-color'] = '#F6E8C3';
+        }
+        else if (feature.properties.type==='4-а'||feature.properties.type==='4-б') {
+        feature.properties['marker-color'] = '#C7EAE5';
+        }
+        else if (feature.properties.type==='5-а'||feature.properties.type==='5-б') {
+        feature.properties['marker-color'] = '#5AB4AC';
+        }
+        else {
+        feature.properties['marker-color'] = '#01665E';
+        }
+
+
+        feature.properties['marker-symbol'] = 'warehouse';
+      });
+
+      //объект который отлично работает с geoJson
+      L.geoJson(source, {
+
+        pointToLayer: L.mapbox.marker.style, //эта функция для того, чтобы распознать стили в данных
+
+        //данные можно сразу зафильтровать по какому-нибудь признаку
+        filter: function(feature) {
+          return (feature.properties.flats >= 1);
+        },
+
+        //с каждым отдельным объектом в загруженных данных можно что-нибудь сделать
+        onEachFeature: function(feature,layer) {
+
+          //например, добавить popup
+          layer.bindPopup(feature.properties.adress + '<br/>Кадастр участка: ' + feature.properties.kadastr_uc +
+                                                      '<br/>Площадь участка: ' + feature.properties.s +
+                                                      '<br/>Кадастр здания: ' + feature.properties.kadastr_zd +
+                                                      '<br/>Тип дома: ' + feature.properties.type +
+                                                      '<br/>Количество квартир: ' + feature.properties.flats)
+        },
+        //функция style пригодится если будете указывать стили для полигонов/линий
+        //style: function(feature) { return feature.properties; }
+
+      })
+      .on('click', function(e) {
+        console.log(e); //показывает свойства объекта на который кликнули
+      })
+      .addTo(map);
+
+    });
+
+
+</script>
+</body>
+</html>
